@@ -16,14 +16,14 @@ data "aws_db_snapshot" "latest_original_snapshot" {
 locals {
   original                  = data.aws_db_instance.original
   sandbox_id                = "${local.original.id}-${var.sandbox_id_suffix}"
-  final_snapshot_identifier = var.save_final_snapshot ? "${local.sandbox_id}-final-snapshot" : "n/a"
+  final_snapshot_identifier = var.save_final_snapshot ? "${local.sandbox_id}-final-snapshot" : null
 }
 
 # Use snapshot from original as well as origianl's RDS config to create a sandbox RDS instance
 resource "aws_db_instance" "sandbox" {
   snapshot_identifier = var.optional_sandbox_snapshot_id != "" ? var.optional_sandbox_snapshot_id : data.aws_db_snapshot.latest_original_snapshot.id
 
-  max_allocated_storage     = local.original.allocated_storage + 500
+  max_allocated_storage     = local.original.allocated_storage + var.buffer_storage_gb
   instance_class            = local.original.db_instance_class
   identifier                = local.sandbox_id
   engine_version            = local.original.engine_version
