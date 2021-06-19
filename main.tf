@@ -14,9 +14,10 @@ data "aws_db_snapshot" "latest_original_snapshot" {
 }
 
 locals {
-  original                  = data.aws_db_instance.original
-  sandbox_id                = "${local.original.id}-${var.sandbox_id_suffix}"
-  final_snapshot_identifier = var.save_final_snapshot ? "${local.sandbox_id}-final-snapshot" : null
+  original                   = data.aws_db_instance.original
+  sandbox_id                 = "${local.original.id}-${var.sandbox_id_suffix}"
+  final_snapshot_identifier  = var.save_final_snapshot ? "${local.sandbox_id}-final-snapshot" : null
+  new_vpc_security_group_ids = concat(local.original.vpc_security_groups, var.extra_vpc_security_group_ids)
 }
 
 # Use snapshot from original as well as origianl's RDS config to create a sandbox RDS instance
@@ -29,7 +30,7 @@ resource "aws_db_instance" "sandbox" {
   engine_version            = local.original.engine_version
   option_group_name         = element(local.original.option_group_memberships, 0)
   parameter_group_name      = element(local.original.db_parameter_groups, 0)
-  vpc_security_group_ids    = local.original.vpc_security_groups
+  vpc_security_group_ids    = local.new_vpc_security_group_ids
   storage_type              = local.original.storage_type
   final_snapshot_identifier = local.final_snapshot_identifier
   skip_final_snapshot       = ! var.save_final_snapshot

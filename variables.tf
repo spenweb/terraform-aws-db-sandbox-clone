@@ -24,5 +24,11 @@ variable "sandbox_id_suffix" {
 variable "buffer_storage_gb" {
   description = "Number of GBs to be summed with original RDS instance's allocated_storage which total will be the max_allocated_storage"
   type        = number
-  default     = 10
+  default     = 0
+}
+
+variable "extra_vpc_security_group_ids" {
+  description = "List of VPC security group ids that will be added to the created RDS instance"
+  type        = list
+  default     = []
 }

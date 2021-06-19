@@ -2,6 +2,7 @@
 Create an RDS clone based on an existing RDS instance
 
 ## Use
+1. Set AWS CLI profile using the environment variable (if no AWS default profile): `export AWS_PROFILE=${profile_name}`
 1. `terraform init`
 1. `terraform apply`
 1. Enter the id of the RDS instance to clone
